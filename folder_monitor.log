@@ -1,0 +1,170 @@
+2025-12-05 18:36:48 | INFO    | Подключено к базе данных: H:\WORKED_PROGRAMMS_POLITEXT\politext_tasks\db.sqlite3
+2025-12-05 18:36:48 | INFO    | ============================================================
+2025-12-05 18:36:48 | INFO    | ЗАПУСК МОНИТОРА ПАПОК
+2025-12-05 18:36:48 | INFO    | ============================================================
+2025-12-05 18:36:48 | INFO    | Мониторинг 4 папок:
+2025-12-05 18:36:48 | INFO    |   • \\192.168.1.45\e\#SPOOLFOLDER
+2025-12-05 18:36:48 | INFO    |   • \\192.168.1.248\#spoolfolder
+2025-12-05 18:36:48 | INFO    |   • \\192.168.1.44\#shared\#INPUT_FOLDER\NEW_TERMAL
+2025-12-05 18:36:48 | INFO    |   • \\192.168.1.85\d\#HOTFOLDER_HARLEQ
+2025-12-05 18:36:48 | INFO    | ============================================================
+2025-12-05 18:36:48 | WARNING | Папка недоступна: \\192.168.1.248\#spoolfolder
+2025-12-05 18:36:48 | INFO    | ✓ Добавлен: 015-510-400_160_BOSMA_FIN-5.pdf [TERMAL]
+2025-12-05 18:36:48 | INFO    | ✓ Добавлен: 015-510-400_4_SUBXANOV_++_Perla forma 3.pdf [TERMAL]
+2025-12-05 18:36:48 | INFO    | ✓ Добавлен: 015-510-400_4_SUBXANOV_Perla forma 3.pdf [TERMAL]
+2025-12-05 18:36:48 | INFO    | ✓ Добавлен: 015-510-400_4_SUBXANOV_Perla forma 4.pdf [TERMAL]
+2025-12-05 18:36:48 | INFO    | ✓ Добавлен: 015-510-400_4_SUBXANOV_Perla forma 7.pdf [TERMAL]
+2025-12-05 18:36:49 | INFO    | ✓ Добавлен: 015-510-400_64_ineteractive_vatan-pod  aldin group.pdf [TERMAL]
+2025-12-05 18:36:49 | INFO    | ✓ Добавлен: 015-510-400_64_MUROD ALDIN_mont_Saodat_2025 1-son_ichi.pdf [TERMAL]
+2025-12-05 18:36:49 | INFO    | ✓ Добавлен: 015-510-400_64_murod aldin_mont_Saodat_2025_1-son_ichi.pdf [TERMAL]
+2025-12-05 18:36:49 | INFO    | ✓ Добавлен: 015-510-400_64_silver star_KEKSALIK GASHTI #2-2024_mont.pdf [TERMAL]
+2025-12-05 18:36:49 | INFO    | ✓ Добавлен: 015-510-400_64__SILVERSTAR_)KEKSALIK GASHTI #9-2024_16 kom_mont.pdf [TERMAL]
+2025-12-05 18:36:49 | INFO    | ✓ Добавлен: 015-510-400_65K_Страницы из AJR BOOK _ARAB_MONT_2.pdf [TERMAL]
+2025-12-05 18:36:49 | INFO    | ✓ Добавлен: 015-510-400_72_ineteractive_vodiy-pod aldin group.pdf [TERMAL]
+2025-12-05 18:36:49 | INFO    | ✓ Добавлен: 015-510-400_80_silverstar_PR-ARAB 20 kom_mont.pdf [TERMAL]
+2025-12-05 18:36:49 | INFO    | ✓ Добавлен: 015-510-400_k+132_grafimex_mont_100 imkoniyatlar_.pdf [TERMAL]
+2025-12-05 18:36:50 | INFO    | ✓ Добавлен: 03_510-400_12_MALAXIT_016 [0.30].pdf [TERMAL]
+2025-12-05 18:36:50 | INFO    | ✓ Добавлен: 03_510-400_8_MALAXIT_017 [0.30].pdf [TERMAL]
+2025-12-05 18:36:50 | INFO    | ✓ Добавлен: 1030-790_4_ADITI для SPS +objig__SFAD_padushki янги 102х66 финал Формага.pdf [TERMAL]
+2025-12-05 18:36:50 | INFO    | ✓ Добавлен: 1030-790_4_EURO ASIA_BPS, Общий тетрадь 36 NEW, 7вид, 69x84.pdf [TERMAL]
+2025-12-05 18:36:50 | INFO    | ✓ Добавлен: 1030-790_4_EUROBOX SPS A1_STP_EuroBoxPrint_Mariya_11.03.2024.pdf [TERMAL]
+2025-12-05 18:36:50 | INFO    | ✓ Добавлен: 1030-790_4_GOFRA BIZNES_trio_PRINT.pdf [TERMAL]
+2025-12-05 18:36:50 | INFO    | ✓ Добавлен: 525-459_220_PL_CTP_525x459_Vnut_JURNALIST RASMLI_KLAPAN_0_mm.pdf [TERMAL]
+2025-12-05 18:36:50 | INFO    | ✓ Добавлен: 525-459_24_colibri_258 Блокнот А5 Антиметил.pdf [TERMAL]
+2025-12-05 18:36:51 | INFO    | ✓ Добавлен: 525-459_4_TAMILLA_Безымянный.pdf [TERMAL]
+2025-12-05 18:36:51 | INFO    | ✓ Добавлен: 525-459_56_viza_ASL_BELGISI_календарь_настенный_2024_2025.pdf [TERMAL]
+2025-12-05 18:36:51 | INFO    | ✓ Добавлен: 525-459_z81_pl_CTP_525X459 _VNUT_Rus dramaturg_KLAPAN_0_mm.pdf [TERMAL]
+2025-12-05 18:36:51 | INFO    | ✓ Добавлен: 745-605_200_qamar_Ishroq-montaj-A2.pdf [TERMAL]
+2025-12-05 18:36:51 | INFO    | ✓ Добавлен: 745-605_36_YANGI ASR_Muhofaza-montaj-A2.pdf [TERMAL]
+2025-12-05 18:36:51 | INFO    | ✓ Добавлен: 745-605_4_ABDUVALI_ohiri Arsenal 4.0 talik pechat (2).pdf [TERMAL]
+2025-12-05 18:36:51 | INFO    | ✓ Добавлен: 745-605_4_ABDUVALI_OXIRI 2,5 Elektrod forma A2 24 ver.pdf [TERMAL]
+2025-12-05 18:36:51 | INFO    | ✓ Добавлен: 745-605_4_ABDUVALI_OXIRI 3.0 Elektrod forma A2 24 ver.pdf [TERMAL]
+2025-12-05 18:36:51 | INFO    | ✓ Добавлен: 890-576_104+2k_yoshlar_Majburiy matematika_210 270 cmyk_A 1 roland.pdf [TERMAL]
+2025-12-05 18:36:52 | INFO    | ✓ Добавлен: 890-576_24_YOSHLAR_5 bio_135-210_A 1 roland.pdf [TERMAL]
+2025-12-05 18:36:52 | INFO    | ✓ Добавлен: 890-576_40_YOSHLAR_5 matematika 2 qism_135-210_A 1 roland.pdf [TERMAL]
+2025-12-05 18:36:52 | INFO    | ✓ Добавлен: 890-576_40_YOSHLAR_Round – Up 2 _A 1 roland_crv.pdf [TERMAL]
+2025-12-05 18:36:52 | INFO    | ✓ Добавлен: 890-576_48_YOSHLAR_5 ona_cmyk_roland A 1.pdf [TERMAL]
+2025-12-05 18:36:52 | INFO    | ✓ Добавлен: 890-576_48_YOSHLAR_ESSENTIAL QR CODE 1_A1 roland_крв.pdf [TERMAL]
+2025-12-05 18:36:52 | INFO    | ✓ Добавлен: 890-576_48_YOSHLAR_Round up  3_A 1 roland_crv.pdf [TERMAL]
+2025-12-05 18:36:52 | INFO    | ✓ Добавлен: 890-576_56_YOSHLAR_Round – Up 4_A 1 roland_crv_new.pdf [TERMAL]
+2025-12-05 18:36:52 | INFO    | ✓ Добавлен: 890-576_80_yoshlar_Adabiyot. 10-sinf  2022_135-210_A 1 roland.pdf [TERMAL]
+2025-12-05 18:36:53 | INFO    | ✓ Добавлен: 890-608_112_BUTIK BOOKS_Godovoy_kurs_zanyatiy_dlya_detey_3-4_let_205x280_09.11.2024_.pdf [TERMAL]
+2025-12-05 18:36:53 | INFO    | ✓ Добавлен: 890-608_156CK_RELAY__QK-Montaj-Rulon.pdf [TERMAL]
+2025-12-05 18:36:53 | INFO    | ✓ Добавлен: 890-608_32_butikbooks_mark___5 Guess What SB__205x280__2024.09.12_.pdf [TERMAL]
+2025-12-05 18:36:53 | INFO    | ✓ Добавлен: 890-608_56_BUTIKBOOKS_mark_Menschen A1.1 AB 205x280_2024.09.20.pdf [TERMAL]
+2025-12-05 18:36:53 | INFO    | ✓ Добавлен: 890-608_72_butikbooks_Solutions_Elementary_SB 175x270_tayyor.pdf [TERMAL]
+2025-12-05 18:36:53 | INFO    | ✓ Добавлен: 890-608_80_BOOTIK BOOKS_HSK-1 SB_205x280 kleyga tayyor.pdf [TERMAL]
+2025-12-05 18:36:53 | INFO    | ✓ Добавлен: 890-608_80_BOOTIK_BOOKS_HSK-1 SB_205x280 kleyga tayyor.pdf [TERMAL]
+2025-12-05 18:36:53 | INFO    | ✓ Добавлен: 890-608_CK28_BUTOIKBOOKS_mark_Navigate Elementary WB 190x255_14.10.2024_Часть1.pdf [TERMAL]
+2025-12-05 18:36:53 | INFO    | ✓ Добавлен: 890-608_CK28_BUTOIKBOOKS_mark_Navigate Elementary WB 190x255_14.10.2024_Часть2.pdf [TERMAL]
+2025-12-05 18:36:54 | INFO    | ✓ Добавлен: NURMUHAMMAD_FIZIKA_04-02-2025_mont.pdf [TERMAL]
+2025-12-05 18:36:54 | INFO    | ✓ Добавлен: PR-ARAB 20 kom_mont.pdf [TERMAL]
+2025-12-05 18:36:54 | INFO    | ✓ Добавлен: Stochastica.pdf [TERMAL]
+2025-12-05 18:36:55 | WARNING | Папка недоступна: \\192.168.1.248\#spoolfolder
+2025-12-05 18:37:00 | WARNING | Папка недоступна: \\192.168.1.248\#spoolfolder
+2025-12-05 18:37:05 | WARNING | Папка недоступна: \\192.168.1.248\#spoolfolder
+2025-12-05 18:37:10 | WARNING | Папка недоступна: \\192.168.1.248\#spoolfolder
+2025-12-05 18:37:15 | WARNING | Папка недоступна: \\192.168.1.248\#spoolfolder
+2025-12-05 18:37:20 | WARNING | Папка недоступна: \\192.168.1.248\#spoolfolder
+2025-12-05 18:37:25 | WARNING | Папка недоступна: \\192.168.1.248\#spoolfolder
+2025-12-05 18:37:30 | WARNING | Папка недоступна: \\192.168.1.248\#spoolfolder
+2025-12-05 18:37:35 | WARNING | Папка недоступна: \\192.168.1.248\#spoolfolder
+2025-12-05 18:37:40 | WARNING | Папка недоступна: \\192.168.1.248\#spoolfolder
+2025-12-05 18:37:45 | WARNING | Папка недоступна: \\192.168.1.248\#spoolfolder
+2025-12-05 18:37:50 | WARNING | Папка недоступна: \\192.168.1.248\#spoolfolder
+2025-12-05 18:37:55 | WARNING | Папка недоступна: \\192.168.1.248\#spoolfolder
+2025-12-05 18:38:00 | WARNING | Папка недоступна: \\192.168.1.248\#spoolfolder
+2025-12-05 18:38:05 | WARNING | Папка недоступна: \\192.168.1.248\#spoolfolder
+2025-12-05 18:38:10 | WARNING | Папка недоступна: \\192.168.1.248\#spoolfolder
+2025-12-05 18:38:15 | WARNING | Папка недоступна: \\192.168.1.248\#spoolfolder
+2025-12-05 18:38:20 | WARNING | Папка недоступна: \\192.168.1.248\#spoolfolder
+2025-12-05 18:38:25 | WARNING | Папка недоступна: \\192.168.1.248\#spoolfolder
+2025-12-05 18:38:25 | INFO    | Остановка по запросу пользователя (Ctrl+C)
+2025-12-05 18:38:25 | INFO    | ============================================================
+2025-12-05 18:38:25 | INFO    | СТАТИСТИКА
+2025-12-05 18:38:25 | INFO    |   Сканирований: 20
+2025-12-05 18:38:25 | INFO    |   Файлов найдено: 991
+2025-12-05 18:38:25 | INFO    |   Файлов добавлено: 51
+2025-12-05 18:38:25 | INFO    |   Ошибок: 0
+2025-12-05 18:38:25 | INFO    | ============================================================
+2025-12-05 18:38:25 | INFO    | Соединение с БД закрыто
+2025-12-05 18:38:25 | INFO    | Подключено к базе данных: H:\WORKED_PROGRAMMS_POLITEXT\politext_tasks\db.sqlite3
+2025-12-05 18:38:25 | INFO    | ============================================================
+2025-12-05 18:38:25 | INFO    | ЗАПУСК МОНИТОРА ПАПОК
+2025-12-05 18:38:25 | INFO    | ============================================================
+2025-12-05 18:38:25 | INFO    | Мониторинг 4 папок:
+2025-12-05 18:38:25 | INFO    |   • \\192.168.1.45\e\#SPOOLFOLDER
+2025-12-05 18:38:25 | INFO    |   • \\192.168.1.248\e\#SPOOLFOLDER
+2025-12-05 18:38:25 | INFO    |   • \\192.168.1.44\#shared\#INPUT_FOLDER\NEW_TERMAL
+2025-12-05 18:38:25 | INFO    |   • \\192.168.1.85\d\#HOTFOLDER_HARLEQ
+2025-12-05 18:38:25 | INFO    | ============================================================
+2025-12-05 18:39:51 | INFO    | ✓ Добавлен: 1030-790_4_GOFRA BIZNES_trio_PRINT.pdf [TERMAL]
+2025-12-05 18:39:51 | INFO    | ✓ Добавлен: 525-459_220_PL_CTP_525x459_Vnut_JURNALIST RASMLI_KLAPAN_0_mm.pdf [TERMAL]
+2025-12-05 18:39:51 | INFO    | ✓ Добавлен: 525-459_24_colibri_258 Блокнот А5 Антиметил.pdf [TERMAL]
+2025-12-05 18:39:51 | INFO    | ✓ Добавлен: 525-459_4_TAMILLA_Безымянный.pdf [TERMAL]
+2025-12-05 18:39:52 | INFO    | ✓ Добавлен: 525-459_56_viza_ASL_BELGISI_календарь_настенный_2024_2025.pdf [TERMAL]
+2025-12-05 18:39:52 | INFO    | ✓ Добавлен: 525-459_z81_pl_CTP_525X459 _VNUT_Rus dramaturg_KLAPAN_0_mm.pdf [TERMAL]
+2025-12-05 18:39:52 | INFO    | ✓ Добавлен: 745-605_200_qamar_Ishroq-montaj-A2.pdf [TERMAL]
+2025-12-05 18:39:52 | INFO    | ✓ Добавлен: 745-605_36_YANGI ASR_Muhofaza-montaj-A2.pdf [TERMAL]
+2025-12-05 18:39:52 | INFO    | ✓ Добавлен: 745-605_4_ABDUVALI_ohiri Arsenal 4.0 talik pechat (2).pdf [TERMAL]
+2025-12-05 18:39:52 | INFO    | ✓ Добавлен: 745-605_4_ABDUVALI_OXIRI 2,5 Elektrod forma A2 24 ver.pdf [TERMAL]
+2025-12-05 18:39:52 | INFO    | ✓ Добавлен: 745-605_4_ABDUVALI_OXIRI 3.0 Elektrod forma A2 24 ver.pdf [TERMAL]
+2025-12-05 18:39:52 | INFO    | ✓ Добавлен: 890-576_104+2k_yoshlar_Majburiy matematika_210 270 cmyk_A 1 roland.pdf [TERMAL]
+2025-12-05 18:39:52 | INFO    | ✓ Добавлен: 890-576_24_YOSHLAR_5 bio_135-210_A 1 roland.pdf [TERMAL]
+2025-12-05 18:39:53 | INFO    | ✓ Добавлен: 890-576_40_YOSHLAR_5 matematika 2 qism_135-210_A 1 roland.pdf [TERMAL]
+2025-12-05 18:39:53 | INFO    | ✓ Добавлен: 890-576_40_YOSHLAR_Round – Up 2 _A 1 roland_crv.pdf [TERMAL]
+2025-12-05 18:39:53 | INFO    | ✓ Добавлен: 890-576_48_YOSHLAR_5 ona_cmyk_roland A 1.pdf [TERMAL]
+2025-12-05 18:39:53 | INFO    | ✓ Добавлен: 890-576_48_YOSHLAR_ESSENTIAL QR CODE 1_A1 roland_крв.pdf [TERMAL]
+2025-12-05 18:39:53 | INFO    | ✓ Добавлен: 890-576_48_YOSHLAR_Round up  3_A 1 roland_crv.pdf [TERMAL]
+2025-12-05 18:39:53 | INFO    | ✓ Добавлен: 890-576_56_YOSHLAR_Round – Up 4_A 1 roland_crv_new.pdf [TERMAL]
+2025-12-05 18:39:53 | INFO    | ✓ Добавлен: 890-576_80_yoshlar_Adabiyot. 10-sinf  2022_135-210_A 1 roland.pdf [TERMAL]
+2025-12-05 18:39:53 | INFO    | ✓ Добавлен: 890-608_112_BUTIK BOOKS_Godovoy_kurs_zanyatiy_dlya_detey_3-4_let_205x280_09.11.2024_.pdf [TERMAL]
+2025-12-05 18:39:53 | INFO    | ✓ Добавлен: 890-608_156CK_RELAY__QK-Montaj-Rulon.pdf [TERMAL]
+2025-12-05 18:39:54 | INFO    | ✓ Добавлен: 890-608_32_butikbooks_mark___5 Guess What SB__205x280__2024.09.12_.pdf [TERMAL]
+2025-12-05 18:39:54 | INFO    | ✓ Добавлен: 890-608_56_BUTIKBOOKS_mark_Menschen A1.1 AB 205x280_2024.09.20.pdf [TERMAL]
+2025-12-05 18:39:54 | INFO    | ✓ Добавлен: 890-608_72_butikbooks_Solutions_Elementary_SB 175x270_tayyor.pdf [TERMAL]
+2025-12-05 18:39:54 | INFO    | ✓ Добавлен: 890-608_80_BOOTIK BOOKS_HSK-1 SB_205x280 kleyga tayyor.pdf [TERMAL]
+2025-12-05 18:39:54 | INFO    | ✓ Добавлен: 890-608_80_BOOTIK_BOOKS_HSK-1 SB_205x280 kleyga tayyor.pdf [TERMAL]
+2025-12-05 18:39:54 | INFO    | ✓ Добавлен: 890-608_CK28_BUTOIKBOOKS_mark_Navigate Elementary WB 190x255_14.10.2024_Часть1.pdf [TERMAL]
+2025-12-05 18:39:54 | INFO    | ✓ Добавлен: 890-608_CK28_BUTOIKBOOKS_mark_Navigate Elementary WB 190x255_14.10.2024_Часть2.pdf [TERMAL]
+2025-12-05 18:39:54 | INFO    | ✓ Добавлен: NURMUHAMMAD_FIZIKA_04-02-2025_mont.pdf [TERMAL]
+2025-12-05 18:39:55 | INFO    | ✓ Добавлен: PR-ARAB 20 kom_mont.pdf [TERMAL]
+2025-12-05 18:39:55 | INFO    | ✓ Добавлен: Stochastica.pdf [TERMAL]
+2025-12-05 18:39:56 | INFO    | ✓ Добавлен: 015-510-400_160_BOSMA_FIN-5.pdf [TERMAL]
+2025-12-05 18:39:56 | INFO    | ✓ Добавлен: 015-510-400_4_SUBXANOV_++_Perla forma 3.pdf [TERMAL]
+2025-12-05 18:39:56 | INFO    | ✓ Добавлен: 015-510-400_4_SUBXANOV_Perla forma 3.pdf [TERMAL]
+2025-12-05 18:39:56 | INFO    | ✓ Добавлен: 015-510-400_4_SUBXANOV_Perla forma 4.pdf [TERMAL]
+2025-12-05 18:39:56 | INFO    | ✓ Добавлен: 015-510-400_4_SUBXANOV_Perla forma 7.pdf [TERMAL]
+2025-12-05 18:39:56 | INFO    | ✓ Добавлен: 015-510-400_64_ineteractive_vatan-pod  aldin group.pdf [TERMAL]
+2025-12-05 18:39:57 | INFO    | ✓ Добавлен: 015-510-400_64_MUROD ALDIN_mont_Saodat_2025 1-son_ichi.pdf [TERMAL]
+2025-12-05 18:39:57 | INFO    | ✓ Добавлен: 015-510-400_64_murod aldin_mont_Saodat_2025_1-son_ichi.pdf [TERMAL]
+2025-12-05 18:39:57 | INFO    | ✓ Добавлен: 015-510-400_64_silver star_KEKSALIK GASHTI #2-2024_mont.pdf [TERMAL]
+2025-12-05 18:39:57 | INFO    | ✓ Добавлен: 015-510-400_64__SILVERSTAR_)KEKSALIK GASHTI #9-2024_16 kom_mont.pdf [TERMAL]
+2025-12-05 18:39:57 | INFO    | ✓ Добавлен: 015-510-400_65K_Страницы из AJR BOOK _ARAB_MONT_2.pdf [TERMAL]
+2025-12-05 18:39:57 | INFO    | ✓ Добавлен: 015-510-400_72_ineteractive_vodiy-pod aldin group.pdf [TERMAL]
+2025-12-05 18:39:57 | INFO    | ✓ Добавлен: 015-510-400_80_silverstar_PR-ARAB 20 kom_mont.pdf [TERMAL]
+2025-12-05 18:39:57 | INFO    | ✓ Добавлен: 015-510-400_k+132_grafimex_mont_100 imkoniyatlar_.pdf [TERMAL]
+2025-12-05 18:39:57 | INFO    | ✓ Добавлен: 03_510-400_12_MALAXIT_016 [0.30].pdf [TERMAL]
+2025-12-05 18:39:58 | INFO    | ✓ Добавлен: 03_510-400_8_MALAXIT_017 [0.30].pdf [TERMAL]
+2025-12-05 18:39:58 | INFO    | ✓ Добавлен: 1030-790_4_ADITI для SPS +objig__SFAD_padushki янги 102х66 финал Формага.pdf [TERMAL]
+2025-12-05 18:39:58 | INFO    | ✓ Добавлен: 1030-790_4_EURO ASIA_BPS, Общий тетрадь 36 NEW, 7вид, 69x84.pdf [TERMAL]
+2025-12-05 18:39:58 | INFO    | ✓ Добавлен: 1030-790_4_EUROBOX SPS A1_STP_EuroBoxPrint_Mariya_11.03.2024.pdf [TERMAL]
+2025-12-05 18:40:50 | INFO    | Остановка по запросу пользователя (Ctrl+C)
+2025-12-05 18:40:50 | INFO    | ============================================================
+2025-12-05 18:40:50 | INFO    | СТАТИСТИКА
+2025-12-05 18:40:50 | INFO    |   Сканирований: 33
+2025-12-05 18:40:50 | INFO    |   Файлов найдено: 1460
+2025-12-05 18:40:50 | INFO    |   Файлов добавлено: 51
+2025-12-05 18:40:50 | INFO    |   Ошибок: 0
+2025-12-05 18:40:50 | INFO    | ============================================================
+2025-12-05 18:40:50 | INFO    | Соединение с БД закрыто
+2025-12-05 18:40:50 | INFO    | Подключено к базе данных: H:\WORKED_PROGRAMMS_POLITEXT\politext_tasks\db.sqlite3
+2025-12-05 18:40:50 | INFO    | ============================================================
+2025-12-05 18:40:50 | INFO    | ЗАПУСК МОНИТОРА ПАПОК
+2025-12-05 18:40:50 | INFO    | ============================================================
+2025-12-05 18:40:50 | INFO    | Мониторинг 4 папок:
+2025-12-05 18:40:50 | INFO    |   • \\192.168.1.45\e\#SPOOLFOLDER
+2025-12-05 18:40:50 | INFO    |   • \\192.168.1.248\e\#SPOOLFOLDER
+2025-12-05 18:40:50 | INFO    |   • \\192.168.1.44\#shared\#INPUT_FOLDER\NEW_TERMAL
+2025-12-05 18:40:50 | INFO    |   • \\192.168.1.85\d\#HOTFOLDER_HARLEQ
+2025-12-05 18:40:50 | INFO    | ============================================================

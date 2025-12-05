@@ -1,433 +1,315 @@
+"""
+Politext Folder Monitor
+Мониторинг сетевых папок и запись PDF-файлов в базу данных.
+"""
 
 import os
 import sqlite3
 import time
+import logging
 from datetime import datetime
+from contextlib import contextmanager
+from typing import Optional
+
 import pytz
 
-# Подключение к базе данных
-conn = sqlite3.connect(r'H:\WORKED_PROGRAMMS_POLITEXT\politext_tasks\db.sqlite3')
-c = conn.cursor()
+# ═══════════════════════════════════════════════════════════════════════════════
+# КОНФИГУРАЦИЯ
+# ═══════════════════════════════════════════════════════════════════════════════
 
-# Список папок для сканирования
-folders = [
-    r'\\192.168.1.45\e\#SPOOLFOLDER\175 ipi MONO',  # AURORA  100 LPI CMYK
-    r'\\192.168.1.45\e\#SPOOLFOLDER\175_CMYK_NEW',  # AURORA  100 LPI CMYK
-    r'\\192.168.1.45\e\#SPOOLFOLDER\175 lpi CMYK NOT OVER',  # AURORA  100 LPI CMYK
+# База данных
+DB_PATH = r'H:\WORKED_PROGRAMMS_POLITEXT\politext_tasks\db.sqlite3'
 
+# Временная зона
+TIMEZONE = pytz.timezone('Asia/Tashkent')
 
-    r'\\192.168.1.248\#spoolfolder\cmyk 100',  # BLUE 100 LPI CMYK
-    r'\\192.168.1.248\e\#SPOOLFOLDER\CMYK175',  # BLUE 175 LPI CMYK
-    r'\\192.168.1.248\#spoolfolder\CMYK 175 NOT OVER',  # BLUE 175 LPI CMYK NOT OVER
-    r'\\192.168.1.248\#spoolfolder\monochrome 100',  # BLUE 100 LPI MONO
-    r'\\192.168.1.248\e\#SPOOLFOLDER\MONO175',  # BLUE 175 LPI MONО
-
-    r'\\192.168.1.44\#shared\#INPUT_FOLDER\NEW_TERMAL\175_CMYK',  # GREEN 100 LPI CMYK
-    r'\\192.168.1.44\#shared\#INPUT_FOLDER\NEW_TERMAL\175_CMYK_PUNCH',  # GREEN 150 LPI CMYK
-    r'\\192.168.1.44\#shared\#INPUT_FOLDER\NEW_TERMAL\175_CMYK_PUNCH_UZKIY',  # GREEN 175 LPI CMYK
-    r'\\192.168.1.44\#shared\#INPUT_FOLDER\NEW_TERMAL\175_CMYK_RULON',  # GREEN 175 LPI CMYK
-    r'\\192.168.1.44\#shared\#INPUT_FOLDER\NEW_TERMAL\175_MONO',  # GREEN 175 LPI CMYK
-    r'\\192.168.1.44\#shared\#INPUT_FOLDER\NEW_TERMAL\175_MONO_PUNCH',  # GREEN 100 LPI MONО
-    r'\\192.168.1.44\#shared\#INPUT_FOLDER\NEW_TERMAL\175_MONO_PUNCH_UZKIY',  # GREEN 175 LPI MONО
-    r'\\192.168.1.44\#shared\#INPUT_FOLDER\NEW_TERMAL\175_MONO_RULON',  # GREEN 175 LPI MONО
-
-    r'\\192.168.1.85\d\#HOTFOLDER_HARLEQ\100_CMYK',  # TERMAL 100 LPI CMYK
-    r'\\192.168.1.85\d\#HOTFOLDER_HARLEQ\100_MONО',  # TERMAL 100 LPI MONО
-    r'\\192.168.1.85\d\#HOTFOLDER_HARLEQ\175_CMYK',  # TERMAL 175 LPI CMYK
-    r'\\192.168.1.85\d\#HOTFOLDER_HARLEQ\175_CMYK_NOTOVER',  # TERMAL 175 LPI CMYK NOTOVER
-    r'\\192.168.1.85\d\#HOTFOLDER_HARLEQ\175_MONO',  # TERMAL 175 LPI MONО
-    r'\\192.168.1.85\d\#HOTFOLDER_HARLEQ\200_LPI',  # TERMAL 200 LPI CMYK
-    r'\\192.168.1.85\d\#HOTFOLDER_HARLEQ\P_175_CMYK',  # TERMAL 175 LPI CMYK PANCH
-    r'\\192.168.1.85\d\#HOTFOLDER_HARLEQ\P_175_CMYK_NOTOVER',  # TERMAL 175 LPI CMYK PANCH NOTOVER
-    r'\\192.168.1.85\d\#HOTFOLDER_HARLEQ\P_175_MONО',  # TERMAL 175 LPI MONО PANCH
-    r'\\192.168.1.85\d\#HOTFOLDER_HARLEQ\M_PUNCH_CMYK_175',  # TERMAL 175 LPI CMYK PANCH
-    r'\\192.168.1.85\d\#HOTFOLDER_HARLEQ\M_PUNCH_MONО_175',  # TERMAL 175 LPI MONО PANCH
-    r'\\192.168.1.85\d\#HOTFOLDER_HARLEQ\P_175_MONO',  # TERMAL 175 LPI MONО PANCH
+# Корневые папки для мониторинга (все подпапки сканируются автоматически)
+ROOT_FOLDERS = [
+    r'\\192.168.1.45\e\#SPOOLFOLDER',
+    r'\\192.168.1.248\e\#SPOOLFOLDER',
+    r'\\192.168.1.44\#shared\#INPUT_FOLDER\NEW_TERMAL',
+    r'\\192.168.1.85\d\#HOTFOLDER_HARLEQ',
 ]
 
-# Сопоставление оборудования с папками
-folder_equipment_mapping = {
-    r'\\192.168.1.248': 'BLUE',
-    r'\\192.168.1.44': 'NEW',
-    r'\\192.168.1.45': 'AURORA',
-    r'\\192.168.1.85': 'TERMAL',
-    # Добавьте другие папки и их сопоставления здесь
+# Сопоставление IP → Оборудование
+EQUIPMENT_MAP = {
+    '192.168.1.45': 'AURORA',
+    '192.168.1.248': 'BLUE',
+    '192.168.1.44': 'NEW',
+    '192.168.1.85': 'TERMAL',
 }
 
-while True:
-    for folder in folders:
-        for root, dirs, files in os.walk(folder):
-            for file in files:
-                if not file.endswith(".pdf"):
-                    continue
+# Интервалы сканирования (секунды)
+SCAN_INTERVAL = 1.0  # Пауза между полными сканами
+FILE_DELAY = 0.05  # Пауза между файлами (снижает нагрузку на сеть)
 
-                file_path = os.path.join(root, file)
+# Расширения файлов для обработки
+FILE_EXTENSIONS = {'.pdf'}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# НАСТРОЙКА ЛОГИРОВАНИЯ
+# ═══════════════════════════════════════════════════════════════════════════════
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s | %(levelname)-7s | %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S',
+    handlers=[
+        logging.StreamHandler(),
+        logging.FileHandler('folder_monitor.log', encoding='utf-8'),
+    ]
+)
+logger = logging.getLogger(__name__)
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# РАБОТА С БАЗОЙ ДАННЫХ
+# ═══════════════════════════════════════════════════════════════════════════════
+
+class DatabaseManager:
+    """Менеджер соединения с SQLite базой данных."""
+
+    def __init__(self, db_path: str):
+        self.db_path = db_path
+        self.conn: Optional[sqlite3.Connection] = None
+
+    def connect(self) -> None:
+        """Установить соединение с БД."""
+        self.conn = sqlite3.connect(self.db_path, timeout=30)
+        self.conn.row_factory = sqlite3.Row
+        logger.info(f"Подключено к базе данных: {self.db_path}")
+
+    def disconnect(self) -> None:
+        """Закрыть соединение с БД."""
+        if self.conn:
+            self.conn.close()
+            self.conn = None
+            logger.info("Соединение с БД закрыто")
+
+    def reconnect(self) -> None:
+        """Переподключиться к БД."""
+        self.disconnect()
+        time.sleep(1)
+        self.connect()
+
+    def file_exists_today(self, filename: str) -> bool:
+        """Проверить, был ли файл уже записан сегодня."""
+        today = datetime.now(TIMEZONE).strftime('%Y-%m-%d')
+        cursor = self.conn.cursor()
+        cursor.execute(
+            """
+            SELECT 1 FROM tasks_politext_tabletask 
+            WHERE file_name = ? AND date(add_date_time) = ?
+            LIMIT 1
+            """,
+            (filename, today)
+        )
+        return cursor.fetchone() is not None
+
+    def insert_file(self, filename: str, created_at: int, equipment: str) -> bool:
+        """Вставить запись о файле в БД."""
+        try:
+            add_date_time = datetime.now(TIMEZONE).strftime('%Y-%m-%d %H:%M:%S')
+            cursor = self.conn.cursor()
+            cursor.execute(
+                """
+                INSERT INTO tasks_politext_tabletask 
+                (file_name, created_at, add_date_time, stage, equipment) 
+                VALUES (?, ?, ?, ?, ?)
+                """,
+                (filename, created_at, add_date_time, 'На выводе', equipment)
+            )
+            self.conn.commit()
+            return True
+        except sqlite3.Error as e:
+            logger.error(f"Ошибка вставки в БД: {e}")
+            self.conn.rollback()
+            return False
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
+# ═══════════════════════════════════════════════════════════════════════════════
+
+def extract_ip_from_path(path: str) -> Optional[str]:
+    """Извлечь IP-адрес из UNC-пути."""
+    # \\192.168.1.45\... → 192.168.1.45
+    if path.startswith('\\\\'):
+        parts = path[2:].split('\\')
+        if parts:
+            return parts[0]
+    return None
+
+
+def get_equipment(file_path: str) -> str:
+    """Определить оборудование по пути к файлу."""
+    ip = extract_ip_from_path(file_path)
+    return EQUIPMENT_MAP.get(ip, 'UNKNOWN')
+
+
+def safe_get_ctime(file_path: str) -> Optional[int]:
+    """
+    Безопасно получить время создания файла.
+    Возвращает None если файл недоступен (исчез, заблокирован и т.д.)
+    """
+    try:
+        return int(os.path.getctime(file_path))
+    except (FileNotFoundError, OSError, PermissionError):
+        return None
+
+
+def is_valid_file(filename: str) -> bool:
+    """Проверить, подходит ли файл для обработки."""
+    ext = os.path.splitext(filename)[1].lower()
+    return ext in FILE_EXTENSIONS
+
+
+def safe_walk(root_folder: str):
+    """
+    Безопасный обход директории.
+    Пропускает недоступные папки без падения.
+    """
+    try:
+        for root, dirs, files in os.walk(root_folder):
+            # Фильтруем только нужные файлы
+            pdf_files = [f for f in files if is_valid_file(f)]
+            yield root, pdf_files
+    except (FileNotFoundError, OSError, PermissionError) as e:
+        logger.warning(f"Не удалось просканировать {root_folder}: {e}")
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# ОСНОВНОЙ КЛАСС МОНИТОРА
+# ═══════════════════════════════════════════════════════════════════════════════
+
+class FolderMonitor:
+    """Монитор папок для отслеживания новых PDF-файлов."""
+
+    def __init__(self, db_manager: DatabaseManager):
+        self.db = db_manager
+        self.stats = {
+            'scans': 0,
+            'files_found': 0,
+            'files_added': 0,
+            'errors': 0,
+        }
+
+    def process_file(self, file_path: str, filename: str) -> None:
+        """Обработать один файл."""
+        # Получаем время создания (файл может уже исчезнуть)
+        created_at = safe_get_ctime(file_path)
+        if created_at is None:
+            # Файл исчез — это нормально, просто пропускаем
+            return
+
+        self.stats['files_found'] += 1
+
+        # Проверяем, записан ли уже сегодня
+        try:
+            if self.db.file_exists_today(filename):
+                return
+        except sqlite3.Error as e:
+            logger.error(f"Ошибка проверки в БД: {e}")
+            self.stats['errors'] += 1
+            return
+
+        # Определяем оборудование
+        equipment = get_equipment(file_path)
+
+        # Вставляем в БД
+        if self.db.insert_file(filename, created_at, equipment):
+            self.stats['files_added'] += 1
+            logger.info(f"✓ Добавлен: {filename} [{equipment}]")
+
+    def scan_folder(self, root_folder: str) -> None:
+        """Просканировать одну корневую папку и все подпапки."""
+        for root, files in safe_walk(root_folder):
+            for filename in files:
+                file_path = os.path.join(root, filename)
 
                 try:
-                    # Попробуйте получить время создания файла
-                    created_at = int(os.path.getctime(file_path))
-                except (FileNotFoundError, OSError) as e:
-                    # Обработка ошибки
-                    print(f"Ошибка при получении времени создания файла {file_path}: {e}")
-                    continue
-
-                try:
-                    # Получите сегодняшнюю дату
-                    today = datetime.now(pytz.timezone('Asia/Tashkent')).strftime('%Y-%m-%d')
-
-                    # Проверьте, был ли файл уже записан в базу данных сегодня
-                    c.execute("SELECT 1 FROM tasks_politext_tabletask WHERE file_name = ? AND date(add_date_time) = ?", (file, today))
-                    existing_file = c.fetchone()
-
-                    if existing_file is None:
-                        # Вставьте файл в базу данных
-                        add_date_time = datetime.now(pytz.timezone('Asia/Tashkent')).strftime('%Y-%m-%d %H:%M:%S')
-                        stage = 'На выводе'
-                        c.execute(
-                            "INSERT INTO tasks_politext_tabletask (file_name, created_at, add_date_time, stage) VALUES (?, ?, ?, ?)",
-                            (file, created_at, add_date_time, stage))
-                        conn.commit()
-
-                        # Получите оборудование для папки
-                        folder_name = os.path.dirname(file_path)
-                        equipment = None
-                        for folder, folder_equipment in folder_equipment_mapping.items():
-                            if folder_name.startswith(folder):
-                                equipment = folder_equipment
-                                break
-
-                        # Обновите столбец equipment в базе данных
-                        c.execute("UPDATE tasks_politext_tabletask SET equipment = ? WHERE file_name = ?",
-                                  (equipment, file))
-                        conn.commit()
+                    self.process_file(file_path, filename)
                 except Exception as e:
-                    print(f"Ошибка при обработке файла {file_path}: {e}")
+                    # Ловим любые неожиданные ошибки
+                    logger.error(f"Ошибка обработки {file_path}: {e}")
+                    self.stats['errors'] += 1
 
-                # Пауза на 0.1 секунды перед следующей итерацией
-                time.sleep(0.1)
-    # Добавьте паузу здесь, чтобы предотвратить постоянное высокое использование ЦП
-    time.sleep(0.1)
+                # Небольшая пауза для снижения нагрузки на сеть
+                time.sleep(FILE_DELAY)
 
+    def scan_all(self) -> None:
+        """Просканировать все корневые папки."""
+        self.stats['scans'] += 1
 
+        for folder in ROOT_FOLDERS:
+            # Проверяем доступность папки перед сканированием
+            if not os.path.exists(folder):
+                logger.warning(f"Папка недоступна: {folder}")
+                continue
 
+            self.scan_folder(folder)
 
-#
-#
-#
+    def run(self) -> None:
+        """Запустить бесконечный цикл мониторинга."""
+        logger.info("=" * 60)
+        logger.info("ЗАПУСК МОНИТОРА ПАПОК")
+        logger.info("=" * 60)
+        logger.info(f"Мониторинг {len(ROOT_FOLDERS)} папок:")
+        for folder in ROOT_FOLDERS:
+            logger.info(f"  • {folder}")
+        logger.info("=" * 60)
 
+        while True:
+            try:
+                self.scan_all()
+                time.sleep(SCAN_INTERVAL)
 
-# import os
-# import sqlite3
-# import time
-# from datetime import datetime
-# import pytz
-#
-# # Connect to the database
-# conn = sqlite3.connect(r'D:\###TASKS\newproject\politext_tasks\db.sqlite3')
-# c = conn.cursor()
-#
-# # List of folders to scan
-# folders = [
-#     r'\\192.168.1.45\#spoolfolder\100 LPI CMYK',  # AURORA  100 LPI CMYK
-#     r'\\192.168.1.45\#spoolfolder\150 lpi CMYK',  # AURORA  150 LPI CMYK
-#     r'\\192.168.1.45\#spoolfolder\175 ipi CMYK',  # AURORA  175 LPI CMYK
-#     r'\\192.168.1.45\#spoolfolder\175 ipi MONO',  # AURORA  175 LPI MONО
-#     r'\\192.168.1.45\#spoolfolder\175 lpi CMYK NOT OVER',  # AURORA  175 LPI CMYK NOT OVER
-#
-#     r'\\192.168.1.248\#spoolfolder\cmyk 100',  # BLUE 100 LPI CMYK
-#     r'\\192.168.1.248\#spoolfolder\CMYK175',  # BLUE 175 LPI CMYK
-#     r'\\192.168.1.248\#spoolfolder\CMYK 175 NOT OVER',  # BLUE 175 LPI CMYK NOT OVER
-#     r'\\192.168.1.248\#spoolfolder\monochrome 100',  # BLUE 100 LPI MONO
-#     r'\\192.168.1.248\#spoolfolder\MONO175',  # BLUE 175 LPI MONО
-#
-#     r'\\192.168.1.38\e\SPOOL FOLDER\CMYK 100',  # GREEN 100 LPI CMYK
-#     r'\\192.168.1.38\e\SPOOL FOLDER\CMYK 150',  # GREEN 150 LPI CMYK
-#     r'\\192.168.1.38\e\SPOOL FOLDER\CMYK 175',  # GREEN 175 LPI CMYK
-#     r'\\192.168.1.38\e\SPOOL FOLDER\CMYK 175',  # GREEN 175 LPI CMYK
-#     r'\\192.168.1.38\e\SPOOL FOLDER\CMYK 175 NOT OVER',  # GREEN 175 LPI CMYK
-#     r'\\192.168.1.38\e\SPOOL FOLDER\MONOCHROME 100',  # GREEN 100 LPI MONО
-#     r'\\192.168.1.38\e\SPOOL FOLDER\MONOCHROME 175',  # GREEN 175 LPI MONО
-#
-#     r'\\192.168.1.85\d\#HOTFOLDER_HARLEQ\100_CMYK',  # TERMAL 100 LPI CMYK
-#     r'\\192.168.1.85\d\#HOTFOLDER_HARLEQ\100_MONО',  # TERMAL 100 LPI MONО
-#     r'\\192.168.1.85\d\#HOTFOLDER_HARLEQ\175_CMYK',  # TERMAL 175 LPI CMYK
-#     r'\\192.168.1.85\d\#HOTFOLDER_HARLEQ\175_CMYK_NOTOVER',  # TERMAL 175 LPI CMYK NOTOVER
-#     r'\\192.168.1.85\d\#HOTFOLDER_HARLEQ\175_MONО',  # TERMAL 175 LPI MONО
-#     r'\\192.168.1.85\d\#HOTFOLDER_HARLEQ\200_LPI',  # TERMAL 200 LPI CMYK
-#     r'\\192.168.1.85\d\#HOTFOLDER_HARLEQ\P_175_CMYK',  # TERMAL 175 LPI CMYK PANCH
-#     r'\\192.168.1.85\d\#HOTFOLDER_HARLEQ\P_175_CMYK_NOTOVER',  # TERMAL 175 LPI CMYK PANCH NOTOVER
-#     r'\\192.168.1.85\d\#HOTFOLDER_HARLEQ\P_175_MONО',  # TERMAL 175 LPI MONО PANCH
-#     r'\\192.168.1.85\d\#HOTFOLDER_HARLEQ\M_PUNCH_CMYK_175',  # TERMAL 175 LPI CMYK PANCH
-#     r'\\192.168.1.85\d\#HOTFOLDER_HARLEQ\M_PUNCH_MONО_175',  # TERMAL 175 LPI MONО PANCH
-# ]
-#
-# # Folder equipment mapping
-# folder_equipment_mapping = {
-#     r'\\192.168.1.248': 'BLUE',
-#     r'\\192.168.1.38': 'GREEN',
-#     r'\\192.168.1.45': 'AURORA',
-#     r'\\192.168.1.85': 'TERMAL',
-#     # Add other folders and their mappings here
-# }
-#
-# while True:
-#     for folder in folders:
-#         for root, dirs, files in os.walk(folder):
-#             for file in files:
-#                 if not file.endswith(".pdf"):
-#                     continue
-#
-#                 file_path = os.path.join(root, file)
-#
-#                 # Попробуйте получить время создания файла
-#                 try:
-#                     created_at = int(os.path.getctime(file_path))
-#                 except FileNotFoundError:
-#                     # Обработка ошибки
-#                     print(f"File not found: {file_path}")
-#                     continue
-#
-#                 try:
-#                     # Get today's date
-#                     today = datetime.now(pytz.timezone('Asia/Tashkent')).strftime('%Y-%m-%d')
-#
-#                     # Check if the file has already been recorded in the database today
-#                     c.execute("SELECT 1 FROM tasks_politext_tabletask WHERE file_name = ? AND date(add_date_time) = ?", (file, today))
-#                     existing_file = c.fetchone()
-#
-#                     if existing_file is None:
-#                         # Insert the file into the database
-#                         add_date_time = datetime.now(pytz.timezone('Asia/Tashkent')).strftime('%Y-%m-%d %H:%M:%S')
-#                         stage = 'На выводе'
-#                         c.execute(
-#                             "INSERT INTO tasks_politext_tabletask (file_name, created_at, add_date_time, stage) VALUES (?, ?, ?, ?)",
-#                             (file, created_at, add_date_time, stage))
-#                         conn.commit()
-#
-#                         # Get the folder equipment
-#                         folder_name = os.path.dirname(file_path)
-#                         equipment = None
-#                         for folder, folder_equipment in folder_equipment_mapping.items():
-#                             if folder_name.startswith(folder):
-#                                 equipment = folder_equipment
-#                                 break
-#
-#                         # Update the equipment column in the database
-#                         c.execute("UPDATE tasks_politext_tabletask SET equipment = ? WHERE file_name = ?",
-#                                   (equipment, file))
-#                         conn.commit()
-#                 except Exception as e:
-#                     print(f"Error processing file {file_path}: {e}")
-#
-#                 # Wait for 0.1 second before scanning again
-#                 time.sleep(0.1)
-#     # Add a sleep here to prevent constant high CPU usage
-#     time.sleep(1)
-#
-#
+            except sqlite3.Error as e:
+                logger.error(f"Ошибка БД: {e}. Переподключение...")
+                self.stats['errors'] += 1
+                try:
+                    self.db.reconnect()
+                except Exception as reconnect_error:
+                    logger.error(f"Не удалось переподключиться: {reconnect_error}")
+                    time.sleep(5)
+
+            except KeyboardInterrupt:
+                logger.info("Остановка по запросу пользователя (Ctrl+C)")
+                break
+
+            except Exception as e:
+                logger.error(f"Неожиданная ошибка: {e}")
+                self.stats['errors'] += 1
+                time.sleep(5)
+
+        self.print_stats()
+
+    def print_stats(self) -> None:
+        """Вывести статистику работы."""
+        logger.info("=" * 60)
+        logger.info("СТАТИСТИКА")
+        logger.info(f"  Сканирований: {self.stats['scans']}")
+        logger.info(f"  Файлов найдено: {self.stats['files_found']}")
+        logger.info(f"  Файлов добавлено: {self.stats['files_added']}")
+        logger.info(f"  Ошибок: {self.stats['errors']}")
+        logger.info("=" * 60)
 
 
-# import os
-# import sqlite3
-# import time
-# from datetime import datetime
-# import pytz
-#
-# # Connect to the database
-# conn = sqlite3.connect(r'D:\###TASKS\newproject\politext_tasks\db.sqlite3')
-# c = conn.cursor()
-#
-# # List of folders to scan
-# folders = [r'\\192.168.1.45\#spoolfolder\100 LPI CMYK',  # AURORA  100 LPI CMYK
-#            r'\\192.168.1.45\#spoolfolder\150 lpi CMYK',  # AURORA  150 LPI CMYK
-#            r'\\192.168.1.45\#spoolfolder\175 ipi CMYK',  # AURORA  175 LPI CMYK
-#            r'\\192.168.1.45\#spoolfolder\175 ipi MONO',  # AURORA  175 LPI MONO
-#            r'\\192.168.1.45\#spoolfolder\175 lpi CMYK NOT OVER',  # AURORA  175 LPI CMYK NOT OVER
-#
-#            r'\\192.168.1.248\#spoolfolder\cmyk 100',  # BLUE 100 LPI CMYK
-#            r'\\192.168.1.248\#spoolfolder\cmyk 175',  # BLUE 175 LPI CMYK
-#            r'\\192.168.1.248\#spoolfolder\CMYK 175 NOT OVER',  # BLUE 175 LPI CMYK NOT OVER
-#            r'\\192.168.1.248\#spoolfolder\monochrome 100',  # BLUE 100 LPI MONO
-#            r'\\192.168.1.248\#spoolfolder\monochrome 175',  # BLUE 175 LPI MONO
-#
-#            r'\\192.168.1.38\e\SPOOL FOLDER\CMYK 100',  # GREEN 100 LPI CMYK
-#            r'\\192.168.1.38\e\SPOOL FOLDER\CMYK 150',  # GREEN 150 LPI CMYK
-#            r'\\192.168.1.38\e\SPOOL FOLDER\CMYK 175',  # GREEN 175 LPI CMYK
-#            r'\\192.168.1.38\e\SPOOL FOLDER\CMYK 175',  # GREEN 175 LPI CMYK
-#            r'\\192.168.1.38\e\SPOOL FOLDER\CMYK 175 NOT OVER',  # GREEN 175 LPI CMYK
-#            r'\\192.168.1.38\e\SPOOL FOLDER\MONOCHROME 100',  # GREEN 100 LPI MONO
-#            r'\\192.168.1.38\e\SPOOL FOLDER\MONOCHROME 175',  # GREEN 175 LPI MONO
-#
-#            r'\\192.168.1.85\d\#HOTFOLDER_HARLEQ\100_CMYK',  # TERMAL 100 LPI CMYK
-#            r'\\192.168.1.85\d\#HOTFOLDER_HARLEQ\100_MONO',  # TERMAL 100 LPI MONO
-#            r'\\192.168.1.85\d\#HOTFOLDER_HARLEQ\175_CMYK',  # TERMAL 175 LPI CMYK
-#            r'\\192.168.1.85\d\#HOTFOLDER_HARLEQ\175_CMYK_NOTOVER',  # TERMAL 175 LPI CMYK NOTOVER
-#            r'\\192.168.1.85\d\#HOTFOLDER_HARLEQ\175_MONO',  # TERMAL 175 LPI MONO
-#            r'\\192.168.1.85\d\#HOTFOLDER_HARLEQ\200_LPI',  # TERMAL 200 LPI CMYK
-#            r'\\192.168.1.85\d\#HOTFOLDER_HARLEQ\P_175_CMYK',  # TERMAL 175 LPI CMYK PANCH
-#            r'\\192.168.1.85\d\#HOTFOLDER_HARLEQ\P_175_CMYK_NOTOVER',  # TERMAL 175 LPI CMYK PANCH NOTOVER
-#            r'\\192.168.1.85\d\#HOTFOLDER_HARLEQ\P_175_MONO',  # TERMAL 175 LPI MONO PANCH
-#            r'\\192.168.1.85\d\#HOTFOLDER_HARLEQ\M_PUNCH_CMYK_175',  # TERMAL 175 LPI CMYK PANCH
-#            r'\\192.168.1.85\d\#HOTFOLDER_HARLEQ\M_PUNCH_MONO_175',  # TERMAL 175 LPI MONO PANCH
-#
-#            ]
-#
-# # Folder equipment mapping
-# folder_equipment_mapping = {
-#     r'\\192.168.1.248': 'BLUE',
-#     r'\\192.168.1.38': 'GREEN',
-#     r'\\192.168.1.45': 'AURORA',
-#     r'\\192.168.1.85': 'TERMAL',
-#
-#     # Add other folders and their mappings here
-# }
-#
-# while True:
-#     for folder in folders:
-#         for root, dirs, files in os.walk(folder):
-#
-#             for file in files:
-#                 if not file.endswith(".pdf"):
-#                     continue
-#
-#                 file_path = os.path.join(root, file)
-#
-#                 # Попробуйте получить время создания файла
-#                 try:
-#                     created_at = int(os.path.getctime(file_path))
-#                 except FileNotFoundError:
-#                     # Обработка ошибки
-#                     continue
-#
-#                 # Check if the file has already been recorded in the database within the last 2 minutes
-#                 current_time = int(time.time())
-#                 two_minutes_ago = current_time - 1200
-#                 c.execute("SELECT created_at FROM tasks_politext_tabletask WHERE file_name = ? AND created_at > ?",
-#                           (file, two_minutes_ago))
-#                 existing_files = c.fetchall()
-#
-#                 if not existing_files:
-#                     # Insert the file into the database
-#                     add_date_time = datetime.now(pytz.timezone('Asia/Tashkent')).strftime('%Y-%m-%d %H:%M:%S')
-#                     stage = 'На выводе'
-#                     c.execute(
-#                         "INSERT INTO tasks_politext_tabletask (file_name, created_at, add_date_time, stage) VALUES (?, ?, ?, ?)",
-#                         (file, created_at, add_date_time, stage))
-#                     conn.commit()
-#
-#                     # Get the folder equipment
-#                     folder_name = os.path.dirname(file_path)
-#                     equipment = None
-#                     for folder, folder_equipment in folder_equipment_mapping.items():
-#                         if folder_name.startswith(folder):
-#                             equipment = folder_equipment
-#                             break
-#
-#                     # Update the equipment column in the database
-#                     c.execute("UPDATE tasks_politext_tabletask SET equipment = ? WHERE file_name = ?",
-#                               (equipment, file))
-#                     conn.commit()
-#
-#                 # Wait for 1 second before scanning again
-#             time.sleep(0.1)
+# ═══════════════════════════════════════════════════════════════════════════════
+# ТОЧКА ВХОДА
+# ═══════════════════════════════════════════════════════════════════════════════
+
+def main():
+    """Главная функция."""
+    db = DatabaseManager(DB_PATH)
+
+    try:
+        db.connect()
+        monitor = FolderMonitor(db)
+        monitor.run()
+    finally:
+        db.disconnect()
 
 
-# while True:
-#     for folder in folders:
-#         for root, dirs, files in os.walk(folder):
-#             for file in files:
-#                 file_path = os.path.join(root, file)
-#                 created_at = int(os.path.getctime(file_path))
-
-# while True:
-#     for folder in folders:
-#         for root, dirs, files in os.walk(folder):
-#
-#             for file in files:
-#                 file_path = os.path.join(root, file)
-#
-#                 # Попробуйте получить время создания файла
-#                 try:
-#                     created_at = int(os.path.getctime(file_path))
-#                 except FileNotFoundError:
-#                     # Обработка ошибки
-#                     continue
-#
-#                 # Check if the file has already been recorded in the database within the last 2 minutes
-#                 current_time = int(time.time())
-#                 two_minutes_ago = current_time - 1200
-#                 c.execute("SELECT created_at FROM tasks_politext_tabletask WHERE file_name = ? AND created_at > ?",
-#                           (file, two_minutes_ago))
-#                 existing_files = c.fetchall()
-#
-#                 if not existing_files:
-#                     # Insert the file into the database
-#                     add_date_time = datetime.now(pytz.timezone('Asia/Tashkent')).strftime('%Y-%m-%d %H:%M:%S')
-#                     stage = 'На выводе'
-#                     c.execute(
-#                         "INSERT INTO tasks_politext_tabletask (file_name, created_at, add_date_time, stage) VALUES (?, ?, ?, ?)",
-#                         (file, created_at, add_date_time, stage))
-#                     conn.commit()
-#
-#                     # Get the folder equipment
-#                     folder_name = os.path.dirname(file_path)
-#                     equipment = None
-#                     for folder, folder_equipment in folder_equipment_mapping.items():
-#                         if folder_name.startswith(folder):
-#                             equipment = folder_equipment
-#                             break
-#
-#                     # Update the equipment column in the database
-#                     c.execute("UPDATE tasks_politext_tabletask SET equipment = ? WHERE file_name = ?",
-#                               (equipment, file))
-#                     conn.commit()
-#
-#                 # Wait for 1 second before scanning again
-#             time.sleep(0.1)
-
-# 29-08-2023 // 12:08
-# Скрипт
-
-#
-# import os
-# import sqlite3
-# import time
-# from datetime import datetime
-#
-# # Connect to the database
-# conn = sqlite3.connect(r'D:\###TASKS\newproject\politext_tasks\db.sqlite3')
-# c = conn.cursor()
-#
-# # List of folders to scan
-# folders = [r'\\192.168.1.38\e\SPOOL FOLDER\CMYK 175',
-#            r'\\192.168.1.248\#spoolfolder\cmyk 175',созданный_at = datetime.fromtimestamp(os.path.getctime(file_path), pytz.timezone('Азия/Ташкент'))
-#            r'\\192.168.1.85\d\#HOTFOLDER_HARLEQ\175_CMYK',
-#            r'\\192.168.1.85\d\#HOTFOLDER_HARLEQ\P_175_CMYK',
-#            ]
-#
-# while True:
-#     for folder in folders:
-#         for root, dirs, files in os.walk(folder):
-#             for file in files:
-#                 file_path = os.path.join(root, file)
-#                 created_at = int(os.path.getctime(file_path))
-#
-#                 # Check if the file has already been recorded in the database within the last 2 minutes
-#
-#                 current_time = int(time.time())
-#                 two_minutes_ago = current_time - 1200
-#                 c.execute("SELECT created_at FROM tasks_politext_tabletask WHERE file_name = ? AND created_at > ?",
-#                           (file, two_minutes_ago))
-#                 existing_files = c.fetchall()
-#
-#                 if not existing_files:
-#                     # Insert the file into the database
-#                     add_date_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-#                     stage = 'На выводе'
-#                     c.execute(
-#                         "INSERT INTO tasks_politext_tabletask (file_name, created_at, add_date_time, stage) VALUES (?, ?, ?, ?)",
-#                         (file, created_at, add_date_time, stage))
-#                     conn.commit()
-#
-#             # Wait for 1 second before scanning again
-#             time.sleep(1)
+if __name__ == '__main__':
+    main()
