@@ -4,14 +4,68 @@ Politext Folder Monitor
 """
 
 import os
+import sys
 import sqlite3
 import time
 import logging
 from datetime import datetime
-from contextlib import contextmanager
 from typing import Optional
 
 import pytz
+
+# Цветной вывод в консоль Windows
+try:
+    from colorama import init, Fore, Style
+    init(autoreset=True)
+    COLORS_AVAILABLE = True
+except ImportError:
+    COLORS_AVAILABLE = False
+    print("Установите colorama для цветных логов: pip install colorama")
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# ЦВЕТНОЙ ФОРМАТТЕР ДЛЯ ЛОГОВ
+# ═══════════════════════════════════════════════════════════════════════════════
+
+class ColoredFormatter(logging.Formatter):
+    """Форматтер с цветным выводом для консоли."""
+
+    COLORS = {
+        logging.DEBUG:    Fore.CYAN,
+        logging.INFO:     Fore.GREEN,
+        logging.WARNING:  Fore.YELLOW,
+        logging.ERROR:    Fore.RED,
+        logging.CRITICAL: Fore.RED + Style.BRIGHT,
+    } if COLORS_AVAILABLE else {}
+
+    ICONS = {
+        logging.DEBUG:    '🔍',
+        logging.INFO:     '✓',
+        logging.WARNING:  '⚠',
+        logging.ERROR:    '✗',
+        logging.CRITICAL: '💥',
+    }
+
+    def format(self, record):
+        # Добавляем иконку
+        icon = self.ICONS.get(record.levelno, '')
+
+        # Базовое форматирование
+        message = super().format(record)
+
+        # Добавляем цвет если доступно
+        if COLORS_AVAILABLE and record.levelno in self.COLORS:
+            color = self.COLORS[record.levelno]
+            reset = Style.RESET_ALL
+            return f"{color}{icon} {message}{reset}"
+
+        return f"{icon} {message}"
+
+
+class FileFormatter(logging.Formatter):
+    """Обычный форматтер для файла (без цветов и иконок)."""
+    pass
+
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # КОНФИГУРАЦИЯ
@@ -40,8 +94,8 @@ EQUIPMENT_MAP = {
 }
 
 # Интервалы сканирования (секунды)
-SCAN_INTERVAL = 1.0  # Пауза между полными сканами
-FILE_DELAY = 0.05  # Пауза между файлами (снижает нагрузку на сеть)
+SCAN_INTERVAL = 1.0       # Пауза между полными сканами
+FILE_DELAY = 0.05         # Пауза между файлами (снижает нагрузку на сеть)
 
 # Расширения файлов для обработки
 FILE_EXTENSIONS = {'.pdf'}
@@ -50,16 +104,33 @@ FILE_EXTENSIONS = {'.pdf'}
 # НАСТРОЙКА ЛОГИРОВАНИЯ
 # ═══════════════════════════════════════════════════════════════════════════════
 
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s | %(levelname)-7s | %(message)s',
-    datefmt='%Y-%m-%d %H:%M:%S',
-    handlers=[
-        logging.StreamHandler(),
-        logging.FileHandler('folder_monitor.log', encoding='utf-8'),
-    ]
-)
-logger = logging.getLogger(__name__)
+def setup_logging():
+    """Настройка логирования с цветным выводом в консоль."""
+    logger = logging.getLogger(__name__)
+    logger.setLevel(logging.DEBUG)
+
+    # Консольный хендлер (цветной)
+    console_handler = logging.StreamHandler(sys.stdout)
+    console_handler.setLevel(logging.INFO)
+    console_handler.setFormatter(ColoredFormatter(
+        '%(asctime)s | %(levelname)-7s | %(message)s',
+        datefmt='%H:%M:%S'
+    ))
+
+    # Файловый хендлер (без цветов)
+    file_handler = logging.FileHandler('folder_monitor.log', encoding='utf-8')
+    file_handler.setLevel(logging.DEBUG)
+    file_handler.setFormatter(FileFormatter(
+        '%(asctime)s | %(levelname)-7s | %(message)s',
+        datefmt='%Y-%m-%d %H:%M:%S'
+    ))
+
+    logger.addHandler(console_handler)
+    logger.addHandler(file_handler)
+
+    return logger
+
+logger = setup_logging()
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -219,7 +290,7 @@ class FolderMonitor:
         # Вставляем в БД
         if self.db.insert_file(filename, created_at, equipment):
             self.stats['files_added'] += 1
-            logger.info(f"✓ Добавлен: {filename} [{equipment}]")
+            logger.info(f"Добавлен: {filename} [{equipment}]")
 
     def scan_folder(self, root_folder: str) -> None:
         """Просканировать одну корневую папку и все подпапки."""
